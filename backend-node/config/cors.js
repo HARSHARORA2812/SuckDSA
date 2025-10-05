@@ -7,6 +7,7 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:3000',
+      'https://suck-dsa.vercel.app',
       'https://suckdsa.vercel.app',
       /\.vercel\.app$/,
       /\.netlify\.app$/
