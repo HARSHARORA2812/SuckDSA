@@ -57,10 +57,11 @@ const ChatPage = () => {
   const sendMessage = async () => {
     if (!currentMessage.trim()) return;
 
+    const messageToSend = currentMessage.trim();
     const userMessage = {
       id: Date.now().toString(),
       type: "user",
-      content: currentMessage
+      content: messageToSend
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -69,7 +70,7 @@ const ChatPage = () => {
 
     try {
       const response = await axios.post(`${API}/chat`, {
-        message: currentMessage,
+        message: messageToSend,
         session_id: sessionId
       });
 
