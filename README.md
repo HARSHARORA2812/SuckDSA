@@ -64,7 +64,7 @@ A brutally honest DSA (Data Structures & Algorithms) learning platform with AI-p
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/SuckDSA.git
+git clone https://github.com/harsha-arora/SuckDSA.git
 cd SuckDSA
 ```
 
