@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get('http://localhost:8001/api/auth/me');
+          const response = await axios.get('https://suckdsa-backend.onrender.com/api/auth/me');
           setUser(response.data.user);
         } catch (error) {
           console.error('Auth check failed:', error);
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:8001/api/auth/login', {
+      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/login', {
         email,
         password
       });
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post('http://localhost:8001/api/auth/register', {
+      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/register', {
         name,
         email,
         password
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyOTP = async (email, otp, name, password) => {
     try {
-      const response = await axios.post('http://localhost:8001/api/auth/verify-otp', {
+      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/verify-otp', {
         email,
         otp,
         name,
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }) => {
 
   const resendOTP = async (email) => {
     try {
-      const response = await axios.post('http://localhost:8001/api/auth/resend-otp', {
+      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/resend-otp', {
         email
       });
 

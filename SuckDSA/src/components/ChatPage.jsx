@@ -9,7 +9,7 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { ArrowLeft, Home, User, LogOut } from "lucide-react";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://suckdsa-backend.onrender.com';
 const API = `${BACKEND_URL}/api`;
 
 const ChatPage = () => {
