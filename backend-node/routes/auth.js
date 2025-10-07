@@ -36,34 +36,38 @@ router.post('/register', validateRegistration, async (req, res) => {
       });
     }
 
-    // Generate OTP
+    // In production, skip OTP and create user directly
+    if (process.env.NODE_ENV === 'production') {
+      const user = new User({ 
+        name, 
+        email, 
+        password, 
+        isVerified: true // Auto-verify in production
+      });
+      await user.save();
+
+      // Generate token immediately
+      const token = generateToken(user._id);
+
+      return res.status(201).json({
+        message: "Registration successful! Welcome to SuckDSA! 🔥",
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          isVerified: user.isVerified
+        }
+      });
+    }
+
+    // For development, use OTP flow
     const otp = generateOTP();
-    
-    // Save OTP to database
-    await OTP.findOneAndDelete({ email }); // Remove any existing OTP
+    await OTP.findOneAndDelete({ email });
     const otpDoc = new OTP({ email, otp });
     await otpDoc.save();
 
-    // Send OTP email with timeout protection
     console.log(`DEBUG: OTP for ${email} is: ${otp}`);
-    
-    // Try to send email but don't wait too long
-    const emailPromise = sendOTPEmail(email, otp, name);
-    const timeoutPromise = new Promise((resolve) => {
-      setTimeout(() => resolve(false), 3000); // 3 second timeout
-    });
-    
-    try {
-      const result = await Promise.race([emailPromise, timeoutPromise]);
-      if (result) {
-        console.log(`OTP sent successfully to ${email}`);
-      } else {
-        console.log(`Email timeout - OTP available in logs for ${email}`);
-      }
-    } catch (error) {
-      console.error('Email service error:', error.message);
-      console.log(`Email failed - OTP available in logs for ${email}`);
-    }
 
     res.status(200).json({
       message: "OTP sent to your email! Check inbox and verify karo 📧",
