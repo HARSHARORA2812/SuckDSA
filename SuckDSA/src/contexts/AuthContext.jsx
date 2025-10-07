@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Get backend URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8001';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -30,7 +33,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get('https://suckdsa-backend.onrender.com/api/auth/me');
+          const response = await axios.get(`${API_BASE_URL}/api/auth/me`);
           setUser(response.data.user);
         } catch (error) {
           console.error('Auth check failed:', error);
@@ -45,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/login', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         email,
         password
       });
@@ -67,12 +70,29 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/register', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
         name,
         email,
         password
       });
 
+      // Check if registration is complete (production mode)
+      if (response.data.token) {
+        // Auto-login user
+        const token = response.data.token;
+        localStorage.setItem('suckdsa_token', token);
+        setToken(token);
+        setUser(response.data.user);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        return { 
+          success: true, 
+          message: response.data.message,
+          autoLogin: true
+        };
+      }
+
+      // OTP flow (development mode)
       return { 
         success: true, 
         message: response.data.message,
@@ -88,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyOTP = async (email, otp, name, password) => {
     try {
-      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/verify-otp', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/verify-otp`, {
         email,
         otp,
         name,
@@ -112,7 +132,7 @@ export const AuthProvider = ({ children }) => {
 
   const resendOTP = async (email) => {
     try {
-      const response = await axios.post('https://suckdsa-backend.onrender.com/api/auth/resend-otp', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/resend-otp`, {
         email
       });
 

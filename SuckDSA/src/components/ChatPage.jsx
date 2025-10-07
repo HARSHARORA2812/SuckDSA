@@ -69,10 +69,11 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${API}/chat`, {
-        message: messageToSend,
-        session_id: sessionId
-      });
+      const requestBody = { message: messageToSend };
+      if (sessionId) {
+        requestBody.session_id = sessionId;
+      }
+      const response = await axios.post(`${API}/chat`, requestBody);
 
       if (!sessionId) {
         setSessionId(response.data.session_id);
@@ -243,7 +244,7 @@ const ChatPage = () => {
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask me about DSA... I dare you 😏"
+                    placeholder="Ask me about DSA... I dare you 😏 v2"
                     className="flex-1 border-orange-200 focus:ring-orange-500 focus:border-orange-500"
                     disabled={isLoading}
                     data-testid="chat-input"
