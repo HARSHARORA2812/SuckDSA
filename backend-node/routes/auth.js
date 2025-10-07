@@ -44,14 +44,25 @@ router.post('/register', validateRegistration, async (req, res) => {
     const otpDoc = new OTP({ email, otp });
     await otpDoc.save();
 
-    // Send OTP email with error handling
+    // Send OTP email with timeout protection
+    console.log(`DEBUG: OTP for ${email} is: ${otp}`);
+    
+    // Try to send email but don't wait too long
+    const emailPromise = sendOTPEmail(email, otp, name);
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => resolve(false), 3000); // 3 second timeout
+    });
+    
     try {
-      await sendOTPEmail(email, otp, name);
-      console.log(`OTP sent successfully to ${email}`);
+      const result = await Promise.race([emailPromise, timeoutPromise]);
+      if (result) {
+        console.log(`OTP sent successfully to ${email}`);
+      } else {
+        console.log(`Email timeout - OTP available in logs for ${email}`);
+      }
     } catch (error) {
       console.error('Email service error:', error.message);
-      console.log(`DEBUG: OTP for ${email} is: ${otp}`);
-      // Continue anyway - user can get OTP from logs if needed
+      console.log(`Email failed - OTP available in logs for ${email}`);
     }
 
     res.status(200).json({
