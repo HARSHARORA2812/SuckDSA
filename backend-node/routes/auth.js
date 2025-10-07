@@ -14,52 +14,6 @@ const { generateOTP, sendOTPEmail } = require('../utils/email');
 
 const router = express.Router();
 
-// Test Register (bypasses email for testing)
-router.post('/register-test', validateRegistration, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        error: "Form validation failed",
-        details: errors.array()
-      });
-    }
-
-    const { name, email, password } = req.body;
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        error: "Email already registered!"
-      });
-    }
-
-    // Create user directly without OTP (for testing)
-    const user = new User({ name, email, password, isVerified: true });
-    await user.save();
-
-    // Generate token
-    const token = generateToken(user._id);
-
-    res.status(201).json({
-      message: "Registration successful! (Test mode - no email required)",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: user.isVerified
-      }
-    });
-
-  } catch (error) {
-    console.error('Test registration error:', error);
-    res.status(500).json({
-      error: "Registration failed"
-    });
-  }
-});
 
 // Register User
 router.post('/register', validateRegistration, async (req, res) => {
@@ -90,18 +44,14 @@ router.post('/register', validateRegistration, async (req, res) => {
     const otpDoc = new OTP({ email, otp });
     await otpDoc.save();
 
-    // Send OTP email (with fallback for development)
-    let emailSent = false;
+    // Send OTP email with error handling
     try {
-      emailSent = await sendOTPEmail(email, otp, name);
+      await sendOTPEmail(email, otp, name);
+      console.log(`OTP sent successfully to ${email}`);
     } catch (error) {
-      console.log('Email service unavailable, using development mode');
+      console.error('Email service error:', error.message);
       console.log(`DEBUG: OTP for ${email} is: ${otp}`);
-    }
-    
-    // Always proceed even if email fails (for testing)
-    if (!emailSent) {
-      console.log(`DEBUG: OTP for ${email} is: ${otp}`);
+      // Continue anyway - user can get OTP from logs if needed
     }
 
     res.status(200).json({
