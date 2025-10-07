@@ -4,7 +4,7 @@ A brutally honest DSA (Data Structures & Algorithms) learning platform with AI-p
 
 ## 🚀 Live Demo
 
-- **Frontend**: [https://suckdsa.vercel.app]((https://suck-dsa.vercel.app/))
+- **Frontend**: [https://suckdsa.vercel.app](https://suck-dsa.vercel.app/)
 - **Backend API**: [https://suckdsa-backend.onrender.com](https://suckdsa-backend.onrender.com)
 - **API Documentation**: [https://suckdsa-backend.onrender.com/api/docs](https://suckdsa-backend.onrender.com/api/docs)
 
