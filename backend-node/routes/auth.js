@@ -14,6 +14,53 @@ const { generateOTP, sendOTPEmail } = require('../utils/email');
 
 const router = express.Router();
 
+// Test Register (bypasses email for testing)
+router.post('/register-test', validateRegistration, async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: "Form validation failed",
+        details: errors.array()
+      });
+    }
+
+    const { name, email, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        error: "Email already registered!"
+      });
+    }
+
+    // Create user directly without OTP (for testing)
+    const user = new User({ name, email, password, isVerified: true });
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    res.status(201).json({
+      message: "Registration successful! (Test mode - no email required)",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isVerified: user.isVerified
+      }
+    });
+
+  } catch (error) {
+    console.error('Test registration error:', error);
+    res.status(500).json({
+      error: "Registration failed"
+    });
+  }
+});
+
 // Register User
 router.post('/register', validateRegistration, async (req, res) => {
   try {
