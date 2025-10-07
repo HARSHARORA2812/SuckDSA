@@ -49,10 +49,11 @@ router.post('/register', validateRegistration, async (req, res) => {
       emailSent = await sendOTPEmail(email, otp, name);
     } catch (error) {
       console.log('Email service unavailable, using development mode');
+      console.log(`DEBUG: OTP for ${email} is: ${otp}`);
     }
     
-    if (!emailSent && process.env.NODE_ENV === 'production') {
-      // In production, log the OTP for debugging (remove in real production)
+    // Always proceed even if email fails (for testing)
+    if (!emailSent) {
       console.log(`DEBUG: OTP for ${email} is: ${otp}`);
     }
 
