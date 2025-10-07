@@ -7,6 +7,8 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:3000',
+      'http://127.0.0.1:53867', // Browser preview proxy
+      /^http:\/\/127\.0\.0\.1:\d+$/, // Any localhost IP with port
       'https://suck-dsa.vercel.app',
       'https://suckdsa.vercel.app',
       /\.vercel\.app$/,
